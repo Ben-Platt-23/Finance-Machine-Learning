@@ -31,6 +31,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import our modules
 from data.data_fetcher import DataFetcher
+from data.robinhood_integration import RobinhoodPortfolioManager
 from analysis.technical_indicators import TechnicalIndicators
 from models.ml_models import InvestmentMLModels
 from models.decision_engine import InvestmentDecisionEngine
@@ -77,6 +78,7 @@ class DailyInvestmentAdvisor:
         logger.info("Initializing Daily Investment Advisor...")
         
         self.data_fetcher = DataFetcher()
+        self.portfolio_manager = RobinhoodPortfolioManager()
         self.technical_analyzer = TechnicalIndicators()
         self.ml_models = InvestmentMLModels()
         self.decision_engine = InvestmentDecisionEngine(
@@ -101,7 +103,17 @@ class DailyInvestmentAdvisor:
             'SPY', 'QQQ', 'IWM', 'VTI'
         ]
         
-        logger.info(f"Initialized with {risk_tolerance} risk tolerance and ${portfolio_value:,.0f} portfolio")
+        # Try to load existing portfolio data
+        if self.portfolio_manager.load_saved_portfolio():
+            portfolio_summary = self.portfolio_manager.get_current_portfolio_summary()
+            if portfolio_summary['total_positions'] > 0:
+                self.portfolio_value = portfolio_summary['total_market_value']
+                logger.info(f"Loaded existing portfolio: {portfolio_summary['total_positions']} positions, "
+                           f"${portfolio_summary['total_market_value']:,.0f} total value")
+            else:
+                logger.info("No existing positions found")
+        
+        logger.info(f"Initialized with {risk_tolerance} risk tolerance and ${self.portfolio_value:,.0f} portfolio")
     
     def fetch_market_data(self, symbols: List[str], period: str = '2y') -> Dict[str, pd.DataFrame]:
         """
@@ -218,6 +230,24 @@ class DailyInvestmentAdvisor:
         
         return training_results
     
+    def get_current_positions(self) -> Dict[str, float]:
+        """
+        Get current portfolio positions from Robinhood data.
+        
+        Returns:
+            Dictionary mapping symbols to dollar values of current positions
+        """
+        try:
+            portfolio_data = self.portfolio_manager.export_for_investment_advisor()
+            if 'error' not in portfolio_data:
+                return portfolio_data.get('current_positions', {})
+            else:
+                logger.warning(f"No portfolio data available: {portfolio_data.get('message', 'Unknown error')}")
+                return {}
+        except Exception as e:
+            logger.error(f"Error getting current positions: {e}")
+            return {}
+    
     def analyze_investments(self, symbols: List[str]) -> Dict[str, any]:
         """
         Perform comprehensive investment analysis.
@@ -261,17 +291,35 @@ class DailyInvestmentAdvisor:
                 logger.info("No existing models found, training new ones...")
                 self.train_models(price_data_dict)
             
-            # 3. ANALYZE EACH ASSET
-            logger.info("Step 3: Analyzing individual assets...")
+            # 3. GET CURRENT POSITIONS
+            logger.info("Step 3: Loading current portfolio positions...")
+            current_positions = self.get_current_positions()
+            
+            if current_positions:
+                logger.info(f"Found {len(current_positions)} current positions")
+                # Add current position symbols to analysis if not already included
+                for symbol in current_positions.keys():
+                    if symbol not in price_data_dict:
+                        try:
+                            symbol_data = self.data_fetcher.get_stock_data([symbol], period='2y')
+                            if symbol in symbol_data and not symbol_data[symbol].empty:
+                                price_data_dict[symbol] = symbol_data[symbol]
+                                logger.info(f"Added current position {symbol} to analysis")
+                        except Exception as e:
+                            logger.warning(f"Could not fetch data for current position {symbol}: {e}")
+            
+            # 4. ANALYZE EACH ASSET
+            logger.info("Step 4: Analyzing individual assets...")
             
             portfolio_analysis = self.decision_engine.analyze_portfolio(
                 symbols=list(price_data_dict.keys()),
                 price_data_dict=price_data_dict,
-                market_data=market_data
+                market_data=market_data,
+                current_positions=current_positions
             )
             
-            # 4. GENERATE POSITION SIZING RECOMMENDATIONS
-            logger.info("Step 4: Calculating position sizes...")
+            # 5. GENERATE POSITION SIZING RECOMMENDATIONS
+            logger.info("Step 5: Calculating position sizes...")
             
             individual_signals = portfolio_analysis.get('individual_signals', {})
             
@@ -302,9 +350,12 @@ class DailyInvestmentAdvisor:
                         max_position_size=0.15 if self.risk_tolerance == 'aggressive' else 0.10
                     )
             
-            # 5. COMPILE FINAL RESULTS
+            # 6. COMPILE FINAL RESULTS
             analysis_end_time = datetime.now()
             analysis_duration = (analysis_end_time - analysis_start_time).total_seconds()
+            
+            # Get portfolio summary for metadata
+            portfolio_summary = self.portfolio_manager.get_current_portfolio_summary()
             
             final_results = {
                 'analysis_metadata': {
@@ -312,7 +363,9 @@ class DailyInvestmentAdvisor:
                     'analysis_duration_seconds': analysis_duration,
                     'symbols_analyzed': len(price_data_dict),
                     'risk_tolerance': self.risk_tolerance,
-                    'portfolio_value': self.portfolio_value
+                    'portfolio_value': self.portfolio_value,
+                    'current_positions_count': len(current_positions),
+                    'portfolio_return_to_date': portfolio_summary.get('total_return_percent', 0)
                 },
                 'market_overview': {
                     'market_regime': getattr(self.decision_engine, 'market_regime', 'normal'),
@@ -549,6 +602,12 @@ def main():
                        help='Output format')
     parser.add_argument('--train-models', action='store_true',
                        help='Force retrain ML models')
+    parser.add_argument('--import-portfolio', type=str, default='',
+                       help='Path to CSV file to import portfolio data')
+    parser.add_argument('--manual-entry', action='store_true',
+                       help='Enter portfolio positions manually')
+    parser.add_argument('--show-portfolio', action='store_true',
+                       help='Show current portfolio summary')
     
     args = parser.parse_args()
     
@@ -558,6 +617,39 @@ def main():
             risk_tolerance=args.risk_tolerance,
             portfolio_value=args.portfolio_value
         )
+        
+        # Handle portfolio management commands
+        if args.import_portfolio:
+            if os.path.exists(args.import_portfolio):
+                logger.info(f"Importing portfolio from {args.import_portfolio}")
+                result = advisor.portfolio_manager.import_from_csv_export(args.import_portfolio)
+                if 'error' not in result:
+                    logger.info("Portfolio import successful!")
+                else:
+                    logger.error(f"Import failed: {result['error']}")
+                    return
+            else:
+                logger.error(f"File not found: {args.import_portfolio}")
+                return
+        
+        if args.manual_entry:
+            logger.info("Starting manual portfolio entry...")
+            advisor.portfolio_manager.manual_position_entry()
+            
+        if args.show_portfolio:
+            summary = advisor.portfolio_manager.get_current_portfolio_summary()
+            print(f"\nCurrent Portfolio Summary:")
+            print(f"Total Positions: {summary['total_positions']}")
+            print(f"Total Value: ${summary['total_market_value']:,.2f}")
+            print(f"Total Return: {summary['total_return_percent']:.2f}%")
+            
+            if summary['positions']:
+                print("\nCurrent Positions:")
+                for symbol, pos in summary['positions'].items():
+                    weight = pos['weight'] * 100
+                    value = pos['market_value']
+                    print(f"  {symbol}: ${value:,.2f} ({weight:.1f}%)")
+            return
         
         # Determine symbols to analyze
         if args.symbols:
