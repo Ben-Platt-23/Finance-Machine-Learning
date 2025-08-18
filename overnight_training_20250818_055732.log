@@ -1,0 +1,64 @@
+Mon Aug 18 05:57:32 MDT 2025: Starting autonomous training setup...
+Mon Aug 18 05:57:32 MDT 2025: Setting Python 3.11.5...
+Mon Aug 18 05:57:32 MDT 2025: Creating virtual environment...
+Mon Aug 18 05:57:34 MDT 2025: Activating virtual environment...
+Mon Aug 18 05:57:34 MDT 2025: Upgrading pip...
+Mon Aug 18 05:57:36 MDT 2025: Installing core packages...
+  error: subprocess-exited-with-error
+  
+  × Building wheel for lightgbm (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> [23 lines of output]
+      2025-08-18 05:58:16,739 - scikit_build_core - INFO - RUN: /private/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/pip-build-env-56aadb2j/normal/lib/python3.11/site-packages/cmake/data/bin/cmake -E capabilities
+      2025-08-18 05:58:16,748 - scikit_build_core - INFO - CMake version: 4.1.0
+      *** scikit-build-core 0.11.5 using CMake 4.1.0 (wheel)
+      2025-08-18 05:58:16,749 - scikit_build_core - INFO - Implementation: cpython darwin on arm64
+      2025-08-18 05:58:16,752 - scikit_build_core - INFO - Build directory: /private/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/tmpzc_begcn/build
+      *** Configuring CMake...
+      2025-08-18 05:58:16,768 - scikit_build_core - INFO - RUN: ninja --version
+      2025-08-18 05:58:16,926 - scikit_build_core - INFO - Ninja version: 1.13.0
+      2025-08-18 05:58:16,927 - scikit_build_core - INFO - RUN: /private/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/pip-build-env-56aadb2j/normal/lib/python3.11/site-packages/cmake/data/bin/cmake -S. -B/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/tmpzc_begcn/build -DCMAKE_BUILD_TYPE:STRING=Release -C/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/tmpzc_begcn/build/CMakeInit.txt -DCMAKE_INSTALL_PREFIX=/var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/tmpzc_begcn/wheel/platlib -DCMAKE_MAKE_PROGRAM=ninja -D__BUILD_FOR_PYTHON:BOOL=ON
+      loading initial cache file /var/folders/9j/pnf5nr_j7r34d588dd_cqyhm0000gn/T/tmpzc_begcn/build/CMakeInit.txt
+      CMake Error at CMakeLists.txt:35 (cmake_minimum_required):
+        Compatibility with CMake < 3.5 has been removed from CMake.
+      
+        Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+        to tell CMake that the project requires at least <min> but has been updated
+        to work with policies introduced by <max> or earlier.
+      
+        Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+      
+      
+      -- Configuring incomplete, errors occurred!
+      
+      *** CMake configuration failed
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for lightgbm
+error: failed-wheel-build-for-install
+
+× Failed to build installable wheels for some pyproject.toml based projects
+╰─> lightgbm
+Mon Aug 18 05:58:19 MDT 2025: Package installation complete!
+Mon Aug 18 05:58:19 MDT 2025: Starting autonomous training...
+Mon Aug 18 05:58:19 MDT 2025: Training started with PID: 19730
+Training is now running in the background!
+You can safely close this terminal and go to sleep.
+
+To monitor progress:
+  tail -f autonomous_training_output.log
+
+To check if it's still running:
+  ps aux | grep 19730
+
+Log files will be created in:
+  - autonomous_training.log (detailed training log)
+  - autonomous_training_output.log (script output)
+  - overnight_training_20250818_055732.log (setup log)
+
+Models will be saved in: trained_models/
+
+🌙 GOOD NIGHT! Your models will be ready in the morning! 🌙
+Mon Aug 18 05:58:24 MDT 2025: Setup complete. Training is running autonomously.
+./run_overnight_training.sh: line 479: EOF: command not found

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/benhplatt23/Desktop/programming/github_repositories/Finance-Machine-Learning/models/heavy_training_system.py", line 25, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'

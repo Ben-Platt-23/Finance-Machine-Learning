@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/benhplatt23/Desktop/programming/github_repositories/Finance-Machine-Learning/autonomous_training.py", line 16, in <module>
+    import lightgbm as lgb
+ModuleNotFoundError: No module named 'lightgbm'
