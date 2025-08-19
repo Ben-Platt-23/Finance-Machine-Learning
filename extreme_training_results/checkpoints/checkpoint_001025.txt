@@ -1,0 +1,3 @@
+Iteration: 1025
+Timestamp: 2025-08-18 18:27:00.852804
+Data: {'phase': 'VALIDATION_VORTEX', 'progress': '75/150', 'global': '1025/1300', 'accuracy': 72.60937873683193, 'duration': 13.22382116317749, 'elapsed': '4:00:51.559584'}

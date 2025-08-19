@@ -1,0 +1,1 @@
+{'timestamp': '2025-08-18T12:36:50.511984', 'phase': 'DATA_PREPROCESSING', 'phase_progress': '700/800', 'global_progress': '700/11300', 'current_accuracy': 64.83613763946924, 'elapsed_time': '0:01:00.482175'}

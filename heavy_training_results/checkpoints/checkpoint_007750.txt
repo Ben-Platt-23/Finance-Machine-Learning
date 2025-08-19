@@ -1,0 +1,1 @@
+{'timestamp': '2025-08-18T12:51:03.710428', 'phase': 'CROSS_VALIDATION', 'phase_progress': '450/1600', 'global_progress': '7750/11300', 'current_accuracy': 88.65928981762394, 'elapsed_time': '0:15:13.680619'}

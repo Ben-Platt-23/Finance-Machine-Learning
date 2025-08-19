@@ -1,0 +1,3 @@
+Iteration: 1245
+Timestamp: 2025-08-18 19:15:16.924732
+Data: {'phase': 'FINAL_FURY', 'progress': '25/80', 'global': '1245/1300', 'accuracy': 73.46124838376639, 'duration': 19.079159021377563, 'elapsed': '4:49:07.631501'}

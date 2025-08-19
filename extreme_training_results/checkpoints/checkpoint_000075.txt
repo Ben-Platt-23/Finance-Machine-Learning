@@ -1,0 +1,3 @@
+Iteration: 75
+Timestamp: 2025-08-18 14:39:30.314692
+Data: {'phase': 'MEGA_PREPROCESSING', 'progress': '75/120', 'global': '75/1300', 'accuracy': 69.05530779638876, 'duration': 10.385684967041016, 'elapsed': '0:13:21.021455'}

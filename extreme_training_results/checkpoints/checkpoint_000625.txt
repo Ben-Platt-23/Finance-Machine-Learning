@@ -1,0 +1,3 @@
+Iteration: 625
+Timestamp: 2025-08-18 16:46:10.990174
+Data: {'phase': 'NEURAL_NIGHTMARE', 'progress': '125/250', 'global': '625/1300', 'accuracy': 70.97723889131004, 'duration': 15.633015632629395, 'elapsed': '2:20:01.696958'}

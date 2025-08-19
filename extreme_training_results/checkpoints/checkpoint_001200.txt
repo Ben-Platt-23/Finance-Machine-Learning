@@ -1,0 +1,3 @@
+Iteration: 1200
+Timestamp: 2025-08-18 19:03:16.950469
+Data: {'phase': 'BACKTEST_BEAST', 'progress': '100/120', 'global': '1200/1300', 'accuracy': 73.76153091875189, 'duration': 11.756495952606201, 'elapsed': '4:37:07.657311'}

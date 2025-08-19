@@ -1,0 +1,1 @@
+{'timestamp': '2025-08-18T12:44:15.660558', 'phase': 'MODEL_TRAINING', 'phase_progress': '1000/2000', 'global_progress': '4500/11300', 'current_accuracy': 79.388051426339, 'elapsed_time': '0:08:25.630751'}

@@ -1,0 +1,1 @@
+{'timestamp': '2025-08-18T12:46:49.063822', 'phase': 'ENSEMBLE_BUILDING', 'phase_progress': '150/1800', 'global_progress': '5650/11300', 'current_accuracy': 85.8527931934167, 'elapsed_time': '0:10:59.034015'}
