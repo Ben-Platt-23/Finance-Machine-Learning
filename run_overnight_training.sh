@@ -477,3 +477,5 @@ sleep 5
 
 echo "$(date): Setup complete. Training is running autonomously."
 EOF
+
+
